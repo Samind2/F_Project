@@ -12,6 +12,14 @@ const store = sequelize.define("store", {
     type: DataTypes.STRING, // ประเภทข้อมูลเป็นข้อความ
     allowNull: false, // ไม่อนุญาตให้ค่านี้เป็นค่าว่าง
   },
+  adminId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: "SUsers",
+      key: "userId",
+    },
+  },
   address: {
     type: DataTypes.STRING, // ประเภทข้อมูลเป็นข้อความ
     allowNull: false, // ไม่อนุญาตให้ค่านี้เป็นค่าว่าง
@@ -32,13 +40,13 @@ const store = sequelize.define("store", {
 });
 
 // สร้างตารางในฐานข้อมูลโดยไม่ลบข้อมูลเก่า
-store
-  .sync({ force: false })
-  .then(() => {
-    console.log("store table created successfully.");
-  })
-  .catch((err) => {
-    console.log("Failed to create table:", err);
-  });
+// store
+//   .sync({ alter: true })
+//   .then(() => {
+//     console.log("store table created successfully.");
+//   })
+//   .catch((err) => {
+//     console.log("Failed to create table:", err);
+//   });
 
 module.exports = store;

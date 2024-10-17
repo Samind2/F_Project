@@ -1,7 +1,7 @@
+// Role.model.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("./db");
 
-// Define Role schema
 const Role = sequelize.define("SRole", {
   id: {
     type: DataTypes.INTEGER,

@@ -4,6 +4,7 @@ const sequelize = require("./models/db");
 const storeRoutes = require("./router/store.Router"); // นำเข้า routes ของ store
 const SUser = require("./models/User.models"); // นำเข้าโมเดล SUser
 const SRole = require("./models/Role.model");
+const db = require("./models")
 require("dotenv").config();
 
 const PORT = process.env.PORT || 5000;
@@ -28,13 +29,13 @@ app.use(cors(corsOptions));
 app.use(express.json()); // ใช้ middleware เพื่ออ่าน JSON
 
 // Sync กับฐานข้อมูล
-sequelize.sync({ force: false }).then(() => {
+db.sequelize.sync({ force: true }).then(() => {
   console.log("Database synced");
   initSRole(); // เรียกใช้เพื่อสร้าง role เริ่มต้น
 });
 
 // เชื่อมต่อ routes
-app.use("/api/stores", storeRoutes); // ใช้เส้นทาง /api/stores เพื่อเชื่อมต่อกับ router
+app.use("/api/v1/stores", storeRoutes); // ใช้เส้นทาง /api/stores เพื่อเชื่อมต่อกับ router
 
 // Home page
 app.get("/", (req, res) => {
@@ -44,4 +45,4 @@ app.get("/", (req, res) => {
 // Start the server
 app.listen(PORT, () => {
   console.log("Server running on port: " + PORT);
-});         
+});

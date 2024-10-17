@@ -1,7 +1,7 @@
+// User.models.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("./db");
 
-// Define Role schema
 const User = sequelize.define("SUser", {
   userId: {
     type: DataTypes.INTEGER,
@@ -21,12 +21,12 @@ const User = sequelize.define("SUser", {
     allowNull: false,
   },
   latitude: {
-    type: DataTypes.FLOAT, // เก็บตัวเลขแบบทศนิยม
-    allowNull: false, // ไม่อนุญาตให้ค่านี้เป็นค่าว่าง
+    type: DataTypes.FLOAT,
+    allowNull: false,
   },
   longitude: {
-    type: DataTypes.FLOAT, // เก็บตัวเลขแบบทศนิยม
-    allowNull: false, // อนุญาตให้ค่านี้เป็นค่าว่างได้
+    type: DataTypes.FLOAT,
+    allowNull: false,
   },
 });
 
