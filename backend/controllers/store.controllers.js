@@ -45,7 +45,7 @@ exports.create = async (req, res) => {
   }
 };
 
-// Get all Store
+// ดึงข้อมูลร้านค้าทั้งหมด
 exports.getAll = async (req, res) => {
   try {
     const data = await Store.findAll();
@@ -58,7 +58,7 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// Get Store by ID
+  // ดึงข้อมูลร้านค้าตาม ID
 exports.getById = async (req, res) => {
   const storeId = req.params.storeId;
   try {
@@ -74,6 +74,45 @@ exports.getById = async (req, res) => {
     res.status(500).send({
       message:
         error.message || "Something error occurred retrieving the restaurant.",
+    });
+  }
+};
+
+// อัปเดตข้อมูลร้านค้า
+exports.update = async (req, res) => {
+  const storeId = req.params.storeId;
+  try {
+    const [updated] = await Store.update(req.body, {
+      where: { storeId: storeId },
+    });
+    if (updated) {
+      res.send({ message: "store updated successfully" });
+    } else {
+      res.send({ message: `store update course with id=${storeId}. Course not found or body is empty!` });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || "An error occurred while updating the store.",
+    });
+  }
+};
+
+
+// ลบข้อมูลร้านค้า
+exports.delete = async (req, res) => {
+  const storeId = req.params.storeId;
+  try {
+    const deleted = await Store.destroy({
+      where: { storeId: storeId },
+    });
+    if (deleted) {
+      res.send({ message: "Course deleted successfully" });
+    } else {
+      res.send({ message: `Cannot delete course with id=${storeId}. Course not found!` });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || "An error occurred while deleting the course.",
     });
   }
 };
