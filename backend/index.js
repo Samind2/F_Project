@@ -32,7 +32,7 @@ app.use(express.json()); // ใช้ middleware เพื่ออ่าน JSO
 // Sync กับฐานข้อมูล
 db.sequelize.sync({ force: false }).then(() => {
   console.log("Database synced");
-  initSRole(); // เรียกใช้เพื่อสร้าง role เริ่มต้น
+  initSRole(); // เรียกใช้เพื่อสร้าง บทบาท
 });
 
 // เชื่อมต่อ routes
