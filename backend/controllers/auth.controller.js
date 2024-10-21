@@ -10,7 +10,7 @@ exports.signup = async (req, res) => {
   const { userName, email, password, address, latitude, longitude, roles } =
     req.body;
 
-  if (!userName || !email || !password || !address || !latitude || !longitude) {
+  if (!userName || !email || !password || !address) {
     return res.status(400).send({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }
 
@@ -24,8 +24,8 @@ exports.signup = async (req, res) => {
       email,
       password: hashedPassword,
       address,
-      latitude,
-      longitude,
+      latitude: latitude || null, // ถ้าไม่มีข้อมูลจะใส่เป็น null
+      longitude: longitude || null, // ถ้าไม่มีข้อมูลจะใส่เป็น null
     });
 
     if (roles) {
@@ -82,6 +82,9 @@ exports.signin = async (req, res) => {
       id: user.userId,
       userName: user.userName,
       email: user.email,
+      address: user.address,
+      latitude: user.latitude, // เพิ่ม latitude
+      longitude: user.longitude,
       roles: authorities,
       accessToken: token,
     });

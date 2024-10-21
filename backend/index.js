@@ -5,10 +5,10 @@ const SRole = require("./models/Role.model");
 const db = require("./models")
 require("dotenv").config();
 const authRouter = require("./router/auth.router") // นำเข้า Router สำหรับ Authentication
-
+const frontend_url = process.env.FRONTEND_URL;
 const PORT = process.env.PORT || 5000;
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: frontend_url,
 };
 
 // Initialize roles
@@ -29,6 +29,8 @@ const app = express();
 app.use(cors(corsOptions));
 app.use(express.json()); // ใช้ middleware เพื่ออ่าน JSON
 
+const stores = require("./stores");
+
 // Sync กับฐานข้อมูล
 db.sequelize.sync({ force: false }).then(() => {
   console.log("Database synced");
@@ -38,6 +40,13 @@ db.sequelize.sync({ force: false }).then(() => {
 // เชื่อมต่อ routes
 app.use("/api/v1/stores", storeRoutes); // ใช้เส้นทาง /api/stores เพื่อเชื่อมต่อกับ router
 app.use("/api/v1/auth", authRouter); // เพิ่มเส้นทาง authRouter
+
+app.get("/api/stores", (req, res) => {
+  if (!stores || stores.length === 0) {
+    return res.status(404).json({ message: "No stores found." });
+  }
+  res.json(stores);
+});
 
 // Home page
 app.get("/", (req, res) => {

@@ -26,11 +26,13 @@ const User = sequelize.define("SUser", {
   },
   latitude: {
     type: DataTypes.FLOAT,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: 0.0,  // กำหนดค่าเริ่มต้นเป็น 0.0
   },
   longitude: {
     type: DataTypes.FLOAT,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: 0.0,  // กำหนดค่าเริ่มต้นเป็น 0.0
   },
 });
 

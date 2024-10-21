@@ -4,7 +4,9 @@ import Navbar from '../component/Navbar';
 import { Outlet } from "react-router-dom";
 import 'tailwindcss/tailwind.css';
 
+
 const Home = () => {
+  
   return (
     <div>
     <Navbar />
