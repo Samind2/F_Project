@@ -16,7 +16,7 @@ const login = async (userName, password) => {
 };
 
 const logout = () => {
-  TokenService.removeUser(); // ลบข้อมูลผู้ใช้เมื่อออกจากระบบเมื่อทำการLogout
+  TokenService.removeUser(); // ลบข้อมูลผู้ใช้ // ลบข้อมูลผู้ใช้เมื่อออกจากระบบเมื่อทำการLogout
 };
 
 const AuthService = {

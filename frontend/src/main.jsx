@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import './index.css'
 import { RouterProvider } from 'react-router-dom';
-import { AuthProvider } from "./contexts/StoreContext.jsx";
+import { AuthProvider } from "./Contexts/StoreContext.jsx";
 import router from './Routers/Router.jsx';
 
 

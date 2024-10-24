@@ -17,7 +17,8 @@ const getUser = () => {
 };
 
 const removeUser = () => {
-  localStorage.removeItem("user");
+  localStorage.removeItem("user"); // ลบข้อมูลผู้ใช้ที่เก็บใน local storage
+  localStorage.removeItem("accessToken"); // ลบ accessToken ออกจาก local storage (ถ้าเก็บ accessToken แยกต่างหาก)
 };
 
 const TokenService = {
