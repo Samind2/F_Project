@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react"; // นำเข้า useState และ useEffect จาก React
 import "../App.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/StoreContext"; // นำเข้า AuthContext
 import Swal from "sweetalert2";
 import Tokenservice from "../services/token.services"; // นำเข้า Tokenservice
 
 
-function Add() {
+function Edit() {
   const navigate = useNavigate();
   const { currentUser } = useAuthContext(); // ดึงข้อมูลผู้ใช้จาก AuthContext
+  const { storeId } = useParams(); // รับ storeId จาก URL
   const base_url = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -16,14 +17,41 @@ function Add() {
     if (!currentUser) {
       Swal.fire({
         title: 'Unauthorized',
-        text: 'Please log in to add a store.',
+        text: 'Please log in to edit a store.',
         icon: 'warning',
         confirmButtonText: 'OK',
       }).then(() => {
         navigate("/login");
       });
+    } else {
+      const fetchStoreData = async () => {
+        try {
+          const response = await fetch(`${base_url}/api/v1/stores/${storeId}`, {
+            headers: {
+              'x-access-token': Tokenservice.getLocalAccessToken(), // Ensure token is included
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+          }
+  
+          const data = await response.json();
+          setStore(data);
+        } catch (error) {
+          console.error('Error fetching store data:', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'Failed to load store data.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+        }
+      };
+  
+      fetchStoreData();
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate, storeId]);
 
   // สร้าง state สำหรับเก็บข้อมูล Store
   const [store, setStore] = useState({
@@ -49,7 +77,7 @@ function Add() {
     e.preventDefault();
 
     // Basic validation
-    if (!store.storeId || !store.storeName || !store.address || !store.latitude || !store.longitude || !store.deliveryRadius) {
+    if (!store.storeName || !store.address || !store.latitude || !store.longitude || !store.deliveryRadius) {
       Swal.fire({
         title: 'Validation Error',
         text: 'Please fill in all fields.',
@@ -60,11 +88,11 @@ function Add() {
     }
 
     try {
-      const response = await fetch(`${base_url}/api/v1/stores`, {
-        method: "POST",
+      const response = await fetch(`${base_url}/api/v1/stores/${storeId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          'x-access-token': Tokenservice.getLocalAccessToken(), // รวม token ที่นี่
+          'x-access-token': Tokenservice.getLocalAccessToken(), // Include token here
         },
         body: JSON.stringify(store),
       });
@@ -72,36 +100,27 @@ function Add() {
       if (response.ok) {
         Swal.fire({
           title: 'Success',
-          text: 'Store added successfully',
+          text: 'Store updated successfully',
           icon: 'success',
           confirmButtonText: 'OK',
         });
 
-        // Reset form after successful addition
-        setStore({
-          storeId: "",
-          storeName: "",
-          address: "",
-          latitude: "",
-          longitude: "",
-          deliveryRadius: "",
-        });
         // Redirect to home or refresh stores
         navigate("/"); 
       } else {
         const errorData = await response.json();
         Swal.fire({
           title: 'Error',
-          text: errorData.message || 'Failed to add Store',
+          text: errorData.message || 'Failed to update Store',
           icon: 'error',
           confirmButtonText: 'OK',
         });
       }
     } catch (error) {
-      console.error("Error adding Store:", error);
+      console.error("Error updating Store:", error);
       Swal.fire({
         title: 'Error',
-        text: 'An error occurred while adding the store.',
+        text: 'An error occurred while updating the store.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
@@ -115,10 +134,10 @@ function Add() {
   return (
     <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-4xl text-center font-bold text-white bg-[#008163] shadow-lg p-4 rounded mb-6">
-        Add Store
+        Edit Store
       </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {["storeId", "storeName", "address", "latitude", "longitude", "deliveryRadius"].map((field, index) => (
+        {["storeName", "address", "latitude", "longitude", "deliveryRadius"].map((field, index) => (
           <label key={index} className="block">
             <span className="text-gray-700">{field.charAt(0).toUpperCase() + field.slice(1)}</span>
             <input
@@ -137,7 +156,7 @@ function Add() {
             className="get-location-btn text-white py-2 px-4 rounded"
             type="submit"
           >
-            Add Store
+            Update Store
           </button>
           <button
             className="get-location-btn text-white py-2 px-4 rounded"
@@ -152,4 +171,4 @@ function Add() {
   );
 }
 
-export default Add;
+export default Edit;

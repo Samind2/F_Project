@@ -16,8 +16,10 @@ const createStore = async (storeData) => {
   // ดึงร้านค้าทั้งหมด
  const getAllStores = async () => { // Make sure to export it
     try {
-      const response = await api.get(STORE_API);
-      return response.data; // Return the data from the response
+      
+      
+      const response = await api.get(`/api/v1/stores`);
+      return response; // Return the data from the response
     } catch (error) {
       console.error("Failed to get all stores:", error);
       throw error; // Re-throw the error so it can be handled elsewhere
@@ -49,7 +51,7 @@ const getStoreById = async (storeId) => {
   // ลบร้านค้าด้วย ID
   const deleteStore = async (storeId) => {
     try {
-      const response = await api.delete(`${STORE_API}${storeId}`);
+      const response = await api.delete(`${STORE_API}/${storeId}`); // เพิ่ม / ก่อน storeId
       return response.data; // Return the result from the response
     } catch (error) {
       console.error(`Failed to delete store with id ${storeId}:`, error);

@@ -4,10 +4,9 @@ import axios from "axios";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Swal from "sweetalert2";
-import LocationMap from "./LocationMap"; // Import LocationMap component
-import "../App.css"
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import LocationMap from "./LocationMap";
+import StoreService from "../services/Store.services";
+import { useNavigate } from "react-router-dom";
 
 // Define custom icons
 const storeIcon = new L.Icon({
@@ -24,25 +23,19 @@ const houseIcon = new L.Icon({
   popupAnchor: [0, -40],
 });
 
-// Custom icon for selected store
 const selectedStoreIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/128/7877/7877890.png", // ไอคอนใหม่สำหรับร้านค้าเมื่อถูกเลือก
+  iconUrl: "https://cdn-icons-png.flaticon.com/128/7877/7877890.png",
   iconSize: [38, 38],
   iconAnchor: [22, 38],
   popupAnchor: [0, -40],
 });
 
-function Map() {
+function Map({ storeData }) {
   const center = [13.838500199744178, 100.02534412184882];
   const [stores, setStores] = useState([]);
   const [myLocation, setMylocation] = useState({ lat: "", lng: "" });
   const [selectedStore, setSelectedStore] = useState(null);
-
-  const [deliveryZone, setDeliveryZone] = useState({
-    lat: null,
-    lng: null,
-    radius: 1000,
-  });
+  const navigate = useNavigate(); // สร้าง instance ของ navigate
 
   const calculateDistance = (lat1, lng1, lat2, lng2) => {
     const R = 6371e3; // Earth radius in meters
@@ -63,12 +56,10 @@ function Map() {
     return R * c; // Distance in meters
   };
 
-
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/stores`);
-        console.log(response.data);
+        const response = await StoreService.getAllStores();
         if (response.status === 200) {
           setStores(response.data);
         }
@@ -77,6 +68,7 @@ function Map() {
       }
     };
     fetchStores();
+    handlerGetLocation(); // Get location on mount
   }, []);
 
   const handlerGetLocation = () => {
@@ -112,11 +104,11 @@ function Map() {
     const distance = calculateDistance(
       myLocation.lat,
       myLocation.lng,
-      selectedStore.lat,
-      selectedStore.lng
+      selectedStore.latitude,
+      selectedStore.longitude
     );
 
-    if (distance <= selectedStore.raduis) {
+    if (distance <= selectedStore.deliveryRadius) {
       Swal.fire({
         title: "Success",
         text: "You are within the delivery zone for " + selectedStore.name,
@@ -132,20 +124,29 @@ function Map() {
       });
     }
   };
+  const handleDelete = async (storeId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await StoreService.deleteStore(storeId); // ลบ store โดยใช้ storeId
+          Swal.fire("Deleted!", "Store has been deleted.", "success");
+          setStores(stores.filter((store) => store.storeId !== storeId)); // อัพเดท state
+        } catch (error) {
+          Swal.fire("Error!", "Failed to delete store.", "error");
+        }
+      }
+    });
+  };
 
   return (
     <>
-      {/* <div className="header-container">
-        <img
-          src="https://cdn-icons-png.flaticon.com/256/12398/12398470.png"
-          alt="Logo"
-          className="logo"
-        />
-        <h1>
-          <span className="color1">STORE DELIVERY</span>
-          <span className="color-red"> ZONE CHECKER</span>
-        </h1>
-      </div> */}
       <div className="button-container">
         <button className="get-location-btn" onClick={handlerGetLocation}>
           Get My Location
@@ -160,7 +161,7 @@ function Map() {
           center={center}
           zoom={13}
           scrollWheelZoom={true}
-          style={{ height: "75vh", width: "100vw" }}
+          style={{ height: "80vh", width: "80%", margin: "0 auto" }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -170,24 +171,36 @@ function Map() {
           {stores.length > 0 &&
             stores.map((store) => (
               <Marker
-                key={store.id}
-                position={[store.lat, store.lng]}
+                key={store.storeId}
+                position={[store.latitude, store.longitude]}
                 icon={
-                  selectedStore && selectedStore.id === store.id
+                  selectedStore && selectedStore.storeId === store.storeId
                     ? selectedStoreIcon
                     : storeIcon
-                } // เปลี่ยนไอคอนถ้ามีการเลือก
+                }
                 eventHandlers={{
                   click: () => {
-                    setSelectedStore(store); // Set selected store
+                    setSelectedStore(store);
                   },
                 }}
               >
-                <Popup>
-                  <b>{store.name}</b>
+                <Popup className="popup">
+                  <b>{store.storeName}</b>
                   <p>{store.address}</p>
-                  <p>Delivery Radius: {store.raduis} meters</p>
+                  <p>Delivery Radius: {store.deliveryRadius} meters</p>
                   <a href={store.direction}>Get Direction</a>
+                  <button
+                    onClick={() => navigate(`/edit/${store.storeId}`)} // นำทางไปยังหน้าแก้ไข
+                    className="popup-button"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(store.storeId)} // เรียกใช้ฟังก์ชัน handleDelete
+                    className="popup-button"
+                  >
+                    Delete
+                  </button>
                 </Popup>
               </Marker>
             ))}
@@ -200,26 +213,23 @@ function Map() {
 
           {selectedStore && (
             <>
-            {/*เพิ่มวงกลมเพื่อบอกรัศมีการจัดส่ง*/}
-            <Circle
-              center={[selectedStore.lat, selectedStore.lng]}
-              radius={selectedStore.raduis}
-              color="#008163"//กำหนดสีของเส้นขอบของวงกลม
-              fillColor="#008163" //กำหนดสีของวงกลม
-              fillOpacity={0.2} //กำหนดความโปร่งใสของสี
-              weight= {1.5}
-            />
-            <Marker
-              position={[selectedStore.lat, selectedStore.lng]}
-              icon={selectedStoreIcon}
-            >
-              {/* ใช้ selectedStoreIcon */}
-              <Popup>
-                <b>{selectedStore.name}</b>
-                <p>{selectedStore.address}</p>
-                <p>Delivery Radius: {selectedStore.radius} meters</p>
-              </Popup>
-            </Marker>
+              <Circle
+                center={[selectedStore.latitude, selectedStore.longitude]}
+                radius={selectedStore.deliveryRadius}
+                color="#008163"
+                fillColor="#008163"
+                fillOpacity={0.2}
+                weight={1.5}
+              />
+              <Marker
+                position={[selectedStore.latitude, selectedStore.longitude]}
+                icon={selectedStoreIcon}
+              >
+                <Popup>
+                  <b>{selectedStore.name}</b>
+                  <p>{selectedStore.address}</p>
+                </Popup>
+              </Marker>
             </>
           )}
         </MapContainer>

@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import AuthService from "../services/auth.services";
 import { useAuthContext } from "../contexts/StoreContext"; // ใช้ useCourse แทน
 import { useNavigate } from "react-router-dom";
@@ -29,25 +29,26 @@ function Login() {
         login(currentUser);
         console.log("Current User:", currentUser); // ตรวจสอบค่า
         Swal.fire({
-          icon: 'success',
-          title: 'Login successful!',
-          text: 'You will be redirected to the homepage.',
+          icon: "success",
+          title: "Login successful!",
+          text: "You will be redirected to the homepage.",
           timer: 2000,
           showConfirmButton: false,
         }).then(() => {
-          navigate('/'); // เปลี่ยนเส้นทางไปที่หน้า Home
+          navigate("/"); // เปลี่ยนเส้นทางไปที่หน้า Home
         });
         setUser({
-         userName: '',
-          password: '',
+          userName: "",
+          password: "",
         });
       }
     } catch (error) {
-      console.error('Login error:', error);
-      const errorMessage = error.response?.data?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ.';
+      console.error("Login error:", error);
+      const errorMessage =
+        error.response?.data?.message || "เกิดข้อผิดพลาดในการเข้าสู่ระบบ.";
       Swal.fire({
-        icon: 'error',
-        title: 'Login failed!',
+        icon: "error",
+        title: "Login failed!",
         text: errorMessage,
         timer: 3000,
         showConfirmButton: true,
@@ -65,10 +66,13 @@ function Login() {
       style={{ backgroundColor: "#F7F7F8" }}
     >
       <div
-        className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-2xl"
+        className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-2xl mx-auto"
         style={{ backgroundColor: "#008163" }}
       >
-        <h2 className="text-3xl font-bold text-center" style={{ color: "#E9EFEC" }}>
+        <h2
+          className="text-3xl font-bold text-center"
+          style={{ color: "#E9EFEC" }}
+        >
           Login
         </h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -122,7 +126,7 @@ function Login() {
               className="flex justify-center w-full px-4 py-2 text-sm font-medium rounded-md shadow-sm "
               style={{
                 backgroundColor: "#EE2526",
-                color: "#E9EFEC"
+                color: "#E9EFEC",
               }}
             >
               Login
@@ -135,10 +139,10 @@ function Login() {
               className="flex justify-center w-full px-4 py-2 text-sm font-medium rounded-md shadow-sm "
               style={{
                 backgroundColor: "#EE2526",
-                color: "#E9EFEC"
+                color: "#E9EFEC",
               }}
             >
-              Cancle
+              Cancel
             </button>
           </div>
         </form>

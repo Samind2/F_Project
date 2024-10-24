@@ -1,12 +1,14 @@
 /* ในไฟล์ App.css หรือไฟล์ CSS ที่คุณใช้ */
 
 body {
-  display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
   margin: 0;
+  overflow: hidden; /* ซ่อน scrollbar ทั้งหมดใน body */
 }
+
+
 
 .header-container {
   display: flex;
@@ -39,6 +41,26 @@ h1 {
   margin-bottom: 20px; /* ระยะห่างจากส่วนหัว */
 }
 
+.popup-button {
+  /* ปรับขนาดและระยะห่าง */
+  width: 100px;
+  height: 40px;
+  margin: 10px 5px;
+
+  /* ปรับสีสันและสไตล์ */
+  background-color: #008163; /* สีน้ำเงิน */
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  /* เอฟเฟกต์เมื่อ hover และ active */
+  transition: all 0.3s ease;
+
+  }
+
+.popup-button:hover {
+  background-color: #EE2526; /* สีเมื่อ hover */
+}
 
 .get-location-btn {
   background-color: #008163; /* สีพื้นหลังปกติ */
@@ -54,3 +76,4 @@ h1 {
 .get-location-btn:hover {
   background-color: #EE2526; /* สีเมื่อ hover */
 }
+

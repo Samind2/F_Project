@@ -36,13 +36,16 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
+        // ถ้ามีข้อผิดพลาดในการตรวจสอบข้อมูล จะไม่ทำงานต่อ
     if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
     }
+    // ตั้งค่า errors และ loading เป็นค่าเริ่มต้น
     setErrors({});
     setLoading(true);
 
+    // ใช้ navigate เพื่อเปลี่ยนเส้นทางหลังจากลงทะเบียนสำเร็จ
     // อัปเดตข้อมูลผู้ใช้เพื่อรวมบทบาทที่ถูกต้อง
     const userData = {
         ...user,
@@ -63,6 +66,10 @@ const Register = () => {
           address: "", // รีเซ็ตที่อยู่เมื่อสำเร็จ
           roles: [''], // รีเซ็ตบทบาทเมื่อสำเร็จ
         });
+
+         // เปลี่ยนเส้นทางไปยังหน้า Login หลังจากลงทะเบียนสำเร็จ
+         navigate("/login");
+
     } catch (error) {
         const errorMessage = error.response?.data?.message || error.message || "An error occurred";
         console.error("Registration error:", errorMessage);

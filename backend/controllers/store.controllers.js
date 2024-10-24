@@ -106,9 +106,9 @@ exports.delete = async (req, res) => {
       where: { storeId: storeId },
     });
     if (deleted) {
-      res.send({ message: "Course deleted successfully" });
+      res.send({ message: "store deleted successfully" });
     } else {
-      res.send({ message: `Cannot delete course with id=${storeId}. Course not found!` });
+      res.send({ message: `store delete course with id=${storeId}. Course not found!` });
     }
   } catch (error) {
     res.status(500).send({
